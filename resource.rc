@@ -1,0 +1,240 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Hong Kong) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ZHH)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_HONGKONG
+#pragma code_page(950)
+#endif //_WIN32
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "0c0404b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "Thales\0"
+            VALUE "FileDescription", "Member\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "Member\0"
+            VALUE "LegalCopyright", "\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Member.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Thales Member\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0xc04, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN DIALOG DISCARDABLE  0, 0, 317, 238
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "Member"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Quit",IDOK,16,198,50,26
+    DEFPUSHBUTTON   "New Member",DLG_NEWMEMBER,13,13,50,26
+    DEFPUSHBUTTON   "New Dog",DLG_NEWDOG,13,45,50,26
+    DEFPUSHBUTTON   "New Sales",DLG_NEWSALES,13,77,50,26
+    DEFPUSHBUTTON   "Report",DLG_REPORT,13,141,50,26
+    DEFPUSHBUTTON   "New Coupons",DLG_NEWCOUPONS,13,109,50,26
+    GROUPBOX        "",IDC_STATIC,7,3,63,228
+    GROUPBOX        "",IDC_STATIC,74,3,236,228
+    LTEXT           "",DLG_SUBMAIN,79,11,224,213
+END
+
+IDD_MAINNEW DIALOG DISCARDABLE  0, 0, 606, 415
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Quit",IDOK,544,4,50,20
+    LTEXT           "Name",IDC_STATIC,8,35,40,14,SS_CENTERIMAGE
+    LTEXT           "ID",IDC_STATIC,8,55,40,14,SS_CENTERIMAGE
+    LTEXT           "Phone 1",IDC_STATIC,8,75,40,14,SS_CENTERIMAGE
+    LTEXT           "Phone 2",IDC_STATIC,8,95,40,14,SS_CENTERIMAGE
+    LTEXT           "Pet Name",IDC_STATIC,8,115,40,14,SS_CENTERIMAGE
+    LTEXT           "Remark",IDC_STATIC,175,34,40,14,SS_CENTERIMAGE
+    LTEXT           "Keyword",IDC_STATIC,8,7,40,14,SS_CENTERIMAGE
+    EDITTEXT        DLG_SEARCHKEY,54,7,101,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Search",DLG_SEARCH,166,5,50,20
+    PUSHBUTTON      "New",DLG_NEWCUSTOMER,228,5,50,20
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,5,28,590,1
+    EDITTEXT        DLG_NAME,54,35,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_ID,54,55,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_PHONE1,54,75,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_PHONE2,54,95,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_PETNAME,54,115,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_REMARK,223,34,168,116,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Points",IDC_STATIC,8,135,40,14,SS_CENTERIMAGE
+    EDITTEXT        DLG_POINTBAL,54,135,101,14,ES_AUTOHSCROLL
+    LTEXT           "Coupons",IDC_STATIC,404,34,40,14,SS_CENTERIMAGE
+    CONTROL         "List1",DLG_COUPONBAL,"SysListView32",LVS_REPORT | 
+                    WS_BORDER | WS_TABSTOP,404,116,191,63
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,397,34,1,147
+    LTEXT           "Date",IDC_STATIC,451,35,40,14,SS_CENTERIMAGE
+    LTEXT           "Type",IDC_STATIC,451,54,40,14,SS_CENTERIMAGE
+    LTEXT           "Qty",IDC_STATIC,451,75,40,14,SS_CENTERIMAGE
+    EDITTEXT        DLG_COUPONDATE,493,34,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_COUPONTYPE,493,54,101,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_COUPONQTY,493,74,101,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Use",DLG_COUPONUSE,545,92,50,20
+    PUSHBUTTON      "Save",DLG_NEWSAVE,339,158,50,20
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,5,184,589,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,5,282,589,1
+    LTEXT           "Sales",IDC_STATIC,7,188,40,14,SS_CENTERIMAGE
+    LTEXT           "Coupons",IDC_STATIC,63,205,40,14,SS_CENTERIMAGE
+    LTEXT           "Single",IDC_STATIC,63,225,40,14,SS_CENTERIMAGE
+    LTEXT           "Shopping",IDC_STATIC,63,245,40,14,SS_CENTERIMAGE
+    LTEXT           "Day care",IDC_STATIC,63,265,40,14,SS_CENTERIMAGE
+    CONTROL         "",DLG_SALESCOUPONS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,49,207,8,10
+    CONTROL         "",DLG_SALESSINGLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    49,227,8,10
+    CONTROL         "",DLG_SALESSALES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    49,247,8,10
+    CONTROL         "",DLG_SALESDAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,49,
+                    267,8,10
+    COMBOBOX        DLG_SALESCOUPONSTYPE,105,206,48,30,CBS_DROPDOWN | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        DLG_SALESSINGLETYPE,105,224,48,30,CBS_DROPDOWN | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        DLG_SALESDAYNAME,105,265,48,30,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        DLG_SALESCOUPONSQTY,157,206,40,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESDAYQTY,158,264,40,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESCOUPONSPRICE,201,206,40,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESSINGLEPRICE,201,224,40,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESSALESPRICE,201,245,40,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESDAYPRICE,201,264,40,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESCOUPONSREMARK,245,206,285,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESSINGLEREMARK,245,225,285,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESSALESREMARK,245,245,285,14,ES_AUTOHSCROLL
+    EDITTEXT        DLG_SALESDAYREMARK,245,264,285,14,ES_AUTOHSCROLL
+    LTEXT           "Type",IDC_STATIC,107,189,40,14,SS_CENTERIMAGE
+    LTEXT           "Qty",IDC_STATIC,158,189,40,14,SS_CENTERIMAGE
+    LTEXT           "Price",IDC_STATIC,201,189,40,14,SS_CENTERIMAGE
+    LTEXT           "Remark",IDC_STATIC,248,189,40,14,SS_CENTERIMAGE
+    PUSHBUTTON      "New",DLG_SALESNEW,540,206,50,20
+    PUSHBUTTON      "Save",DLG_SALESSAVE,540,235,50,20
+    CONTROL         "List1",DLG_HISTORY,"SysListView32",LVS_REPORT | 
+                    WS_BORDER | WS_TABSTOP,6,289,525,119
+    PUSHBUTTON      "All",DLG_HISTORYALL,539,289,50,20
+    PUSHBUTTON      "Coupons",DLG_HISTORYCOUPONS,539,313,50,20
+    PUSHBUTTON      "Single",DLG_HISTORYSINGLE,539,337,50,20
+    PUSHBUTTON      "Shopping",DLG_HISTORYSALES,539,361,50,20
+    PUSHBUTTON      "Day care",DLG_HISTORYDAY,539,385,50,20
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_MAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 310
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 231
+    END
+
+    IDD_MAINNEW, DIALOG
+    BEGIN
+        RIGHTMARGIN, 601
+        BOTTOMMARGIN, 414
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Chinese (Hong Kong) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
