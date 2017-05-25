@@ -1,3 +1,5 @@
+#pragma warning (disable : 4786)
+
 #include <string>
 #include <deque>
 
@@ -18,7 +20,7 @@ Coupons::Coupons() :
 {
 }
 
-Sales::Sales() :
+Transactions::Transactions() :
 	category(""),
 	type(""),
 	quantity(0),
@@ -38,7 +40,7 @@ Customer::~Customer()
 {
 }
 
-void Customer::init(struct Info &info)
+void Customer::init(const std::string &id, struct Info &info)
 {
 }
 

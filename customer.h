@@ -1,6 +1,10 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
+#include <string>
+#include <map>
+#include <deque>
+
 class Database;
 
 struct Info
@@ -22,9 +26,9 @@ struct Coupons
 	long quantity;
 };
 
-struct Sales
+struct Transactions
 {
-	Sales();
+	Transactions();
 
 	std::string category;
 	std::string type;
@@ -40,7 +44,7 @@ public :
 	Customer();
 	virtual ~Customer();
 
-	void init(struct Info &info);		// init memory & write db
+	void init(const std::string &id, struct Info &info);
 
 	int read(const Database &db, std::string &id);	// from db, write mem
 
@@ -50,10 +54,11 @@ public :
 	int writeSales(const Database &db);
 
 	std::string id;
+
 	Info info;
 	long point;
-	std::deque<struct Coupons> coupons;
-	std::deque<struct Sales> sales;
+	std::map<std::string, long> coupons;
+	std::deque<struct Transactions> transactions;
 private :
 
 };

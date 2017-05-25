@@ -1,5 +1,6 @@
 // Member.cpp : Defines the entry point for the application.
 //
+#pragma warning (disable : 4786)
 
 #include <windows.h>
 #include <Commctrl.h>
@@ -149,7 +150,7 @@ static int saveCustomer(HWND hWnd)
 	GetWindowText(GetDlgItem(hWnd, DLG_REMARK), buffer, sizeof(buffer)/sizeof(buffer[0]));
 	info.remark=buffer;
 
-	customer.init(info);
+	//customer.init(info);
 	customer.writeInfo(_db);
 
 	return 0;
