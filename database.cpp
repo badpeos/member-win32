@@ -1,4 +1,5 @@
 #pragma warning (disable : 4786)
+#pragma warning (disable : 4503)
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -440,6 +441,7 @@ static int cbTransactions(void *pt, int count, char **data, char **column)
 	}
 
 	std::map<std::string, std::deque<struct Transactions> > *result;
+	result=(std::map<std::string, std::deque<struct Transactions> > *) pt;
 	(*result)[id].push_back(transaction);
 
 	return 0;
@@ -517,27 +519,81 @@ int Database::read (const std::string &id, Customer &customer)
 int Database::readPoint(const std::string &id, long &point)
 {
 	// select all from points where id = id
+	std::string sql;
+	char *msg;
+	long pnts;
 
-	point = 0;
+	sql="select * from points where id = " + std::string("'") + id + std::string("';");
+	sqlite3_exec(_db, sql.c_str(), cbPoints, &pnts, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	point = pnts;
 	return 0;
 }
 
-int Database::readCoupons(const std::string &id, const std::string &type, long &oldQty)
+int Database::readCoupons(const std::string &id, const std::string &type, long &qty)
 {
-	oldQty = 0;
+	char *msg;
+	std::map< std::string, std::map<std::string, long> > result;
 
-	// select * from coupons where id = id
+	// select * from coupons where id = id and type = type
+	std::string sql;
+	sql="select * from coupons where id = " + 
+		std::string("'") + id + std::string("' ") +
+		std::string("and type = ") + 
+		std::string("'") + type + std::string("';");
+	sqlite3_exec(_db, sql.c_str(), cbCoupons, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	qty = result[id][type];
 
 	return 0;
 }
 
 int Database::readCoupons(const std::string &id, std::deque<struct Coupons> &coupons)
 {
+	char *msg;
+	std::map< std::string, std::map<std::string, long> > result;
+
+	// select * from coupons where id = id and type = type
+	std::string sql;
+	sql="select * from coupons where id = " + 
+		std::string("'") + id + std::string("';");
+	sqlite3_exec(_db, sql.c_str(), cbCoupons, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	std::map<std::string, long> &temp = result[id];
+
+	std::map<std::string, long>::iterator iter;
+	iter = temp.begin();
+	while (iter != temp.end())
+	{
+		struct Coupons coupon;
+		coupon.type = iter->first;
+		coupon.quantity = iter->second;
+		coupons.push_back(coupon);
+		iter++;
+	}		
+
 	return 0;
 }
 
 int Database::readTransactions(const std::string &id, std::deque<struct Transactions> &transactions)
 {
+	//sql="create table transactions (id text, category text, type text, quantity integer, price real, remark text);";
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+
+	transactions = result[id];
+
 	return 0;
 }
 
@@ -545,5 +601,27 @@ int Database::search (const std::string &keyword, std::deque<Customer> &customer
 {
 	// select id from info where id = keyword or phone1 = keyword or phone2 = keyword
 	// for each id in return set, do read(id, customer) and push back to deque
+	char *msg;
+	std::map<std::string, struct Info> result;
+
+	std::string sql;
+	sql="select * from info where id like '%" + keyword + std::string("%'") + 
+		std::string(" or phone1 like '%") + keyword + std::string("%'") + 
+		std::string(" or phone2 like '%") + keyword + std::string("%';");
+	sqlite3_exec(_db, sql.c_str(), cbInfo, &result, &msg);
+
+	std::map<std::string, struct Info>::iterator iter;
+	iter = result.begin();
+	while (iter!=result.end())
+	{
+		Customer customer;
+		std::string id = iter->first;
+		struct Info info = iter->second;
+
+		customer.init(id, info);
+		customers.push_back(customer);
+
+		iter++;
+	}
 	return 0;
 }
