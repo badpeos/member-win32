@@ -22,6 +22,7 @@ struct Coupons
 {
 	Coupons();
 
+	std::string date;
 	std::string type;
 	long quantity;
 };

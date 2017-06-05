@@ -5,7 +5,7 @@
 
 #include <string>
 #include <algorithm>
-
+#include <unordered_map>
 #include "sqlite3.h"
 #include "database.h"
 
@@ -41,7 +41,7 @@ int Database::init (const std::string &filename)
 	if (msg)
 		sqlite3_free(msg);
 
-	sql="create table info (id text, name text, phone1 text, phone2 text, petname text, remark text);";
+	sql="create table info (date text, id text, name text, phone1 text, phone2 text, petname text, remark text);";
 	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 	if (msg)
 		sqlite3_free(msg);
@@ -56,7 +56,7 @@ int Database::init (const std::string &filename)
 	if (msg)
 		sqlite3_free(msg);
 
-	sql="create table transactions (id text, category text, type text, quantity integer, price real, remark text);";
+	sql="create table transactions (date text, id text, category text, type text, quantity integer, price real, remark text);";
 	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 	if (msg)
 		sqlite3_free(msg);
@@ -64,7 +64,7 @@ int Database::init (const std::string &filename)
 	return 0;
 }
 
-int Database::createCustomer(const Customer &customer)
+int Database::createCustomer(const Customer &customer, const std::string &date)
 {
 	std::string sql;
 	char *msg;
@@ -76,7 +76,8 @@ int Database::createCustomer(const Customer &customer)
 		return -1;
 
 	// info
-	sql="insert into info (id, name, phone1, phone2, petname, remark) values (" + 
+	sql="insert into info (date, id, name, phone1, phone2, petname, remark) values (" + 
+		std::string("'") + date + std::string("', ") +
 		std::string("'") + customer.id + std::string("', ") +
 		std::string("'") + customer.info.name + std::string("', ") +
 		std::string("'") + customer.info.phone1 + std::string("', ") +
@@ -99,7 +100,7 @@ int Database::createCustomer(const Customer &customer)
 	return 0;
 }
 
-int Database::updateInfo(const std::string &id, const struct Info &info)
+int Database::updateInfo(const std::string &id, const struct Info &info, const std::string &date)
 {
 	std::string sql;
 	char *msg;
@@ -112,16 +113,18 @@ int Database::updateInfo(const std::string &id, const struct Info &info)
 	{
 		temp.info = info;
 		temp.id = id;
-		rc=createCustomer(temp);
+		rc=createCustomer(temp, date);
 	}
 	else
 	{
 		sql = "update info set " + 
+			std::string("date = '") + date + std::string("', ") + 
 			std::string("name = '") + info.name + std::string("', ") +
 			std::string("phone1 = '") + info.phone1 + std::string("', ") +
 			std::string("phone2 = '") + info.phone2 + std::string("', ") +
 			std::string("petname = '") + info.petName + std::string("', ") +
 			std::string("remark = '") + info.remark + std::string("' ") + 
+			std::string("date = '") + date + std::string("' ") +
 			std::string("where id = '") + std::string("'") + id + std::string("';");
 		sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 		if (msg)
@@ -132,7 +135,7 @@ int Database::updateInfo(const std::string &id, const struct Info &info)
 	return rc;
 }
 
-int Database::updatePoints(const std::string &id, const long point)
+int Database::updatePoints(const std::string &id, const long point, const std::string &date)
 {
 	std::string sql;
 	char *msg;
@@ -140,14 +143,14 @@ int Database::updatePoints(const std::string &id, const long point)
 
 	long oldPoint;
 	int count = readPoint(id, oldPoint);
-	if (count == 1)
+	//if (count == 1)
 	{
 		long newPoint = oldPoint + point;
 
 		// update point
 		sprintf (buffer, "%ld", newPoint);
 		sql="update points set " +
-			std::string("point = ") + std::string(buffer) + 
+			std::string("point = ") + std::string(buffer) + std::string(" ") + 
 			std::string("where id = '") + id + std::string("';");
 		sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 		if (msg)
@@ -155,7 +158,8 @@ int Database::updatePoints(const std::string &id, const long point)
 
 		// update transaction
 		sprintf(buffer, "%ld", point);
-		sql="insert into transactions (id, category, type, quantity, price, remark) values (" +
+		sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
+			std::string("'") + date + std::string("', ") + 
 			std::string("'") + id + std::string("', ") +
 			std::string("'") + std::string("point change") + std::string("', ") +
 			std::string("'") + std::string("") + std::string("', ") +
@@ -170,24 +174,27 @@ int Database::updatePoints(const std::string &id, const long point)
 	return 0;
 }
 
-int Database::updateCoupons(const std::string &id, const std::string &type, const long quantity, const double total)
+int Database::updateCoupons(const std::string &id, const std::string &type, const long quantity, const double total, const std::string &remark, const std::string &date)
 {
 	//sql="create table coupons (id text, type text, quantity integer);";
 	std::string sql;
 	char *msg;
 	char buffer[512]={0};
+	char totBuf[512]={0};
 
 	Customer customer;
 	long oldQty = 0;
 	int count = readCoupons(id, type, oldQty);
 	long newQty = oldQty+quantity;
 	sprintf (buffer, "%ld", newQty);
+	sprintf (totBuf, "%.1lf", total);
 	if (count == 1)
 	{
 		
 		sql="update coupons set " +
-			std::string("quantity = ") + std::string(buffer) + 
-			std::string("where id = '") + id + std::string("';");
+			std::string("quantity = ") + std::string(buffer) + std::string(" ") + 
+			std::string("where id = '") + id + std::string("' ") +
+			std::string("and type = '") + type + std::string("';");
 		sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 		if (msg)
 			sqlite3_free(msg);
@@ -206,21 +213,24 @@ int Database::updateCoupons(const std::string &id, const std::string &type, cons
 
 	// update transaction
 	sprintf(buffer, "%ld", quantity);
-	sql="insert into transactions (id, category, type, quantity, price, remark) values (" +
+	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
+		std::string("'") + date + std::string("', ") +
 		std::string("'") + id + std::string("', ") +
 		std::string("'") + std::string("coupons change") + std::string("', ") +
 		std::string("'") + type + std::string("', ") +
 		std::string("'") + std::string(buffer) + std::string("', ") +
-		std::string("'") + std::string("") + std::string("', ") +
-		std::string("'") + std::string("") + std::string("');");
+		std::string("'") + std::string(totBuf) + std::string("', ") +
+		std::string("'") + remark + std::string("');");
 	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 	if (msg)
 		sqlite3_free(msg);
 
+	updatePoints(id, (long)total, date);
+
 	return 0;
 }
 
-int Database::updateBath(const std::string &id, const std::string &type, const long quantity, const double total)
+int Database::updateBath(const std::string &id, const std::string &type, const long quantity, const double total, const std::string &remark, const std::string &date)
 {
 	std::string sql;
 	char qtyBuf[512]={0};
@@ -230,24 +240,25 @@ int Database::updateBath(const std::string &id, const std::string &type, const l
 	sprintf(qtyBuf, "%ld", quantity);
 	sprintf(totBuf, "%.1lf", total);
 
-	sql="insert into transactions (id, category, type, quantity, price, remark) values (" +
+	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
+		std::string("'") + date + std::string("', ") + 
 		std::string("'") + id + std::string("', ") + 
 		std::string("'") + std::string("single bath") + std::string("', ") +
 		std::string("'") + type + std::string("', ") +
 		std::string("'") + std::string(qtyBuf) + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") + 
-		std::string("'") + std::string("") + std::string("'") +
+		std::string("'") + remark + std::string("'") +
 		std::string(");");
 	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 	if (msg)
 		sqlite3_free(msg);
 
-	updatePoints(id, total);
+	updatePoints(id, (long)total, date);
 
 	return 0;
 }
 
-int Database::updateShopping(const std::string &id, const double price)
+int Database::updateShopping(const std::string &id, const double price, const std::string &remark, const std::string &date)
 {
 	std::string sql;
 	char totBuf[512]={0};
@@ -255,24 +266,25 @@ int Database::updateShopping(const std::string &id, const double price)
 
 	sprintf(totBuf, "%.1lf", price);
 
-	sql="insert into transactions (id, category, type, quantity, price, remark) values (" +
+	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
+		std::string("'") + date + std::string("', ") + 
 		std::string("'") + id + std::string("', ") + 
 		std::string("'") + std::string("sales") + std::string("', ") +
 		std::string("'") + std::string("") + std::string("', ") +
 		std::string("'") + std::string("") + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") + 
-		std::string("'") + std::string("") + std::string("'") +
+		std::string("'") + remark + std::string("'") +
 		std::string(");");
 	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 	if (msg)
 		sqlite3_free(msg);
 
-	updatePoints(id, (long)price);
+	updatePoints(id, (long)price, date);
 
 	return 0;
 }
 
-int Database::updateDaycare(const std::string &id, const std::string &type, const long quantity, const double total)
+int Database::updateDaycare(const std::string &id, const std::string &type, const long quantity, const double total, const std::string &remark, const std::string &date)
 {
 	std::string sql;
 	char totBuf[512]={0};
@@ -282,19 +294,20 @@ int Database::updateDaycare(const std::string &id, const std::string &type, cons
 	sprintf(qtyBuf, "%ld", quantity);
 	sprintf(totBuf, "%.1lf", total);
 
-	sql="insert into transactions (id, category, type, quantity, price, remark) values (" +
+	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
+		std::string("'") + date + std::string("', ") + 
 		std::string("'") + id + std::string("', ") + 
 		std::string("'") + std::string("day care") + std::string("', ") +
 		std::string("'") + type + std::string("', ") +
 		std::string("'") + std::string(qtyBuf) + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") + 
-		std::string("'") + std::string("") + std::string("'") +
+		std::string("'") + remark + std::string("'") +
 		std::string(");");
 	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 	if (msg)
 		sqlite3_free(msg);
 
-	updatePoints(id, (long)total);
+	updatePoints(id, (long)total, date);
 	return 0;
 }
 
@@ -366,8 +379,8 @@ static int cbCoupons(void *pt, int count, char **data, char **column)
 		}
 	}
 
-	std::map< std::string, std::map<std::string, long> > *result;
-	result = (std::map< std::string, std::map<std::string, long> > *) pt;
+	std::map< std::string, std::unordered_map<std::string, long> > *result;
+	result = (std::map< std::string, std::unordered_map<std::string, long> > *) pt;
 	(*result)[id][type] = qty;
 	return 0;
 }
@@ -471,7 +484,7 @@ int Database::read (std::deque<Customer> &customers)
 		iter++;
 	}
 
-	return 0;
+	return customers.size();
 }
 
 int Database::read (const std::string &id, Customer &customer)
@@ -494,8 +507,11 @@ int Database::read (const std::string &id, Customer &customer)
 	readTransactions(id, transactions);		// transactions
 
 	std::map<std::string, struct Info>::iterator iter = infos.begin();
-	customer.init(id, iter->second);
-	customer.point = point;		
+	if (infos.size())
+	{
+		customer.init(id, iter->second);
+		customer.point = point;
+	}
 
 	std::deque<struct Coupons>::iterator couponIter;
 	couponIter = coupons.begin();		
@@ -513,7 +529,7 @@ int Database::read (const std::string &id, Customer &customer)
 		tranIter++;
 	}
 
-	return 0;
+	return infos.size();
 }
 
 int Database::readPoint(const std::string &id, long &point)
@@ -529,13 +545,13 @@ int Database::readPoint(const std::string &id, long &point)
 		sqlite3_free(msg);
 
 	point = pnts;
-	return 0;
+	return 1;
 }
 
 int Database::readCoupons(const std::string &id, const std::string &type, long &qty)
 {
 	char *msg;
-	std::map< std::string, std::map<std::string, long> > result;
+	std::map< std::string, std::unordered_map<std::string, long> > result;
 
 	// select * from coupons where id = id and type = type
 	std::string sql;
@@ -547,15 +563,18 @@ int Database::readCoupons(const std::string &id, const std::string &type, long &
 	if (msg)
 		sqlite3_free(msg);
 
+	std::unordered_map<std::string, long>::iterator iter = result[id].find(type);
+	//std::deque<std::string, long>::iterator iter = std::find(result[id].begin(), result[id].end(), type);
+	int rc = iter!=result[id].end();
 	qty = result[id][type];
 
-	return 0;
+	return rc;
 }
 
 int Database::readCoupons(const std::string &id, std::deque<struct Coupons> &coupons)
 {
 	char *msg;
-	std::map< std::string, std::map<std::string, long> > result;
+	std::map< std::string, std::unordered_map<std::string, long> > result;
 
 	// select * from coupons where id = id and type = type
 	std::string sql;
@@ -565,9 +584,9 @@ int Database::readCoupons(const std::string &id, std::deque<struct Coupons> &cou
 	if (msg)
 		sqlite3_free(msg);
 
-	std::map<std::string, long> &temp = result[id];
+	std::unordered_map<std::string, long> &temp = result[id];
 
-	std::map<std::string, long>::iterator iter;
+	std::unordered_map<std::string, long>::iterator iter;
 	iter = temp.begin();
 	while (iter != temp.end())
 	{
@@ -576,7 +595,7 @@ int Database::readCoupons(const std::string &id, std::deque<struct Coupons> &cou
 		coupon.quantity = iter->second;
 		coupons.push_back(coupon);
 		iter++;
-	}		
+	}
 
 	return 0;
 }
@@ -591,6 +610,8 @@ int Database::readTransactions(const std::string &id, std::deque<struct Transact
 	sql="select * from transactions where id = " + 
 		std::string("'") + id + std::string("';");
 	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
 
 	transactions = result[id];
 
@@ -609,16 +630,22 @@ int Database::search (const std::string &keyword, std::deque<Customer> &customer
 		std::string(" or phone1 like '%") + keyword + std::string("%'") + 
 		std::string(" or phone2 like '%") + keyword + std::string("%';");
 	sqlite3_exec(_db, sql.c_str(), cbInfo, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
 
 	std::map<std::string, struct Info>::iterator iter;
 	iter = result.begin();
 	while (iter!=result.end())
 	{
 		Customer customer;
+		long points;
 		std::string id = iter->first;
 		struct Info info = iter->second;
 
+		readPoint(id, points);
+
 		customer.init(id, info);
+		customer.point = points;
 		customers.push_back(customer);
 
 		iter++;

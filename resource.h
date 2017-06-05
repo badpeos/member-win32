@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
 #define IDD_MAIN                        1000
@@ -9,6 +9,7 @@
 #define DLG_NEWSALES                    1004
 #define DLG_NEWCOUPONS                  1005
 #define DLG_REPORT                      1006
+#define DLG_I                           1012
 #define IDD_MAINNEW                     2000
 #define DLG_SEARCHKEY                   2001
 #define DLG_SEARCH                      2002
@@ -62,6 +63,8 @@
 #define DLG_HISTORY                     2050
 #define DLG_HISTORYDAY                  2051
 #define DLG_HISTORYSINGLE               2052
+#define DLG_SALESDATE                   2053
+#define DLG_QUIT                        2054
 
 // Next default values for new objects
 // 
@@ -69,7 +72,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

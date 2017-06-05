@@ -16,14 +16,14 @@ public :
 
 	int init (const std::string &filename);
 
-	int createCustomer(const Customer &customer);
+	int createCustomer(const Customer &customer, const std::string &date);
 
-	int updateInfo(const std::string &id, const struct Info &info);
-	int updatePoints(const std::string &id, const long point);
-	int updateCoupons(const std::string &id, const std::string &type, const long quantity, const double total);
-	int updateBath(const std::string &id, const std::string &type, const long quantity, const double total);
-	int updateShopping(const std::string &id, const double price);
-	int updateDaycare(const std::string &id, const std::string &type, const long quantity, const double total);
+	int updateInfo(const std::string &id, const struct Info &info, const std::string &date);
+	int updatePoints(const std::string &id, const long point, const std::string &date);
+	int updateCoupons(const std::string &id, const std::string &type, const long quantity, const double total, const std::string &remark, const std::string &date);
+	int updateBath(const std::string &id, const std::string &type, const long quantity, const double total, const std::string &remark, const std::string &date);
+	int updateShopping(const std::string &id, const double price, const std::string &remark, const std::string &date);
+	int updateDaycare(const std::string &id, const std::string &type, const long quantity, const double total, const std::string &remark, const std::string &date);
 	//int newTransaction(const std::string &id, const struct Sales &sales);
 
 	int read (std::deque<Customer> &customers);

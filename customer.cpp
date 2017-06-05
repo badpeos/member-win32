@@ -40,8 +40,10 @@ Customer::~Customer()
 {
 }
 
-void Customer::init(const std::string &id, struct Info &info)
+void Customer::init(const std::string &_id, struct Info &_info)
 {
+	id=_id;
+	info = _info;
 }
 
 int Customer::read(const Database &db, std::string &id)
