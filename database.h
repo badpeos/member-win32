@@ -34,6 +34,12 @@ public :
 	int readTransactions(const std::string &id, std::deque<struct Transactions> &transactions);
 	int search (const std::string &keyword, std::deque<Customer> &customers);
 
+	int readTransactionAll(const std::string &id, std::deque<struct Transactions> &transactions);
+	int readTransactionCoupons(const std::string &id, std::deque<struct Transactions> &transactions);
+	int readTransactionSingle(const std::string &id, std::deque<struct Transactions> &transactions);
+	int readTransactionSales(const std::string &id, std::deque<struct Transactions> &transactions);
+	int readTransactionDay(const std::string &id, std::deque<struct Transactions> &transactions);
+
 private :
 	sqlite3 *_db;
 };

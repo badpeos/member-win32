@@ -161,7 +161,7 @@ int Database::updatePoints(const std::string &id, const long point, const std::s
 		sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
 			std::string("'") + date + std::string("', ") + 
 			std::string("'") + id + std::string("', ") +
-			std::string("'") + std::string("point change") + std::string("', ") +
+			std::string("'") + std::string("point") + std::string("', ") +
 			std::string("'") + std::string("") + std::string("', ") +
 			std::string("'") + std::string(buffer) + std::string("', ") +
 			std::string("'") + std::string("") + std::string("', ") +
@@ -216,7 +216,7 @@ int Database::updateCoupons(const std::string &id, const std::string &type, cons
 	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
 		std::string("'") + date + std::string("', ") +
 		std::string("'") + id + std::string("', ") +
-		std::string("'") + std::string("coupons change") + std::string("', ") +
+		std::string("'") + std::string("coupons") + std::string("', ") +
 		std::string("'") + type + std::string("', ") +
 		std::string("'") + std::string(buffer) + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") +
@@ -243,7 +243,7 @@ int Database::updateBath(const std::string &id, const std::string &type, const l
 	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
 		std::string("'") + date + std::string("', ") + 
 		std::string("'") + id + std::string("', ") + 
-		std::string("'") + std::string("single bath") + std::string("', ") +
+		std::string("'") + std::string("bath") + std::string("', ") +
 		std::string("'") + type + std::string("', ") +
 		std::string("'") + std::string(qtyBuf) + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") + 
@@ -270,8 +270,8 @@ int Database::updateShopping(const std::string &id, const double price, const st
 		std::string("'") + date + std::string("', ") + 
 		std::string("'") + id + std::string("', ") + 
 		std::string("'") + std::string("sales") + std::string("', ") +
-		std::string("'") + std::string("") + std::string("', ") +
-		std::string("'") + std::string("") + std::string("', ") +
+		std::string("'") + std::string("---") + std::string("', ") +
+		std::string("'") + std::string("1") + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") + 
 		std::string("'") + remark + std::string("'") +
 		std::string(");");
@@ -297,7 +297,7 @@ int Database::updateDaycare(const std::string &id, const std::string &type, cons
 	sql="insert into transactions (date, id, category, type, quantity, price, remark) values (" +
 		std::string("'") + date + std::string("', ") + 
 		std::string("'") + id + std::string("', ") + 
-		std::string("'") + std::string("day care") + std::string("', ") +
+		std::string("'") + std::string("care") + std::string("', ") +
 		std::string("'") + type + std::string("', ") +
 		std::string("'") + std::string(qtyBuf) + std::string("', ") +
 		std::string("'") + std::string(totBuf) + std::string("', ") + 
@@ -650,5 +650,90 @@ int Database::search (const std::string &keyword, std::deque<Customer> &customer
 
 		iter++;
 	}
+	return 0;
+}
+
+int Database::readTransactionAll(const std::string &id, std::deque<struct Transactions> &transactions)
+{
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	transactions = result[id];
+
+	return 0;
+}
+
+int Database::readTransactionCoupons(const std::string &id, std::deque<struct Transactions> &transactions)
+{
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("' and category = 'coupons';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	transactions = result[id];
+
+	return 0;
+}
+
+int Database::readTransactionSingle(const std::string &id, std::deque<struct Transactions> &transactions)
+{
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("' and category = 'bath';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	transactions = result[id];
+
+	return 0;
+}
+
+int Database::readTransactionSales(const std::string &id, std::deque<struct Transactions> &transactions)
+{
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("' and category = 'sales';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	transactions = result[id];
+
+	return 0;
+}
+
+int Database::readTransactionDay(const std::string &id, std::deque<struct Transactions> &transactions)
+{
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("' and category = 'care';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	transactions = result[id];
+
 	return 0;
 }

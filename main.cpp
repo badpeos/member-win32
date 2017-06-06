@@ -28,7 +28,8 @@ static int initDaycareType(HWND hWnd);
 static int newSales(HWND hWnd);
 
 static int initListView(HWND hWnd, UINT ctrlID, std::deque<std::string> &header);
-static int updateCouponList(HWND hWnd, struct Coupons &coupon);
+static int updateCouponList(HWND hWnd);
+static int updateHistoryList(HWND hWnd);
 static int useCoupon(HWND hWnd);
 static int updatePoint(HWND hWnd);
 static Database _db;
@@ -202,10 +203,11 @@ static BOOL initMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	historyHeader.push_back("Remark                         ");
 	initListView(hWnd, DLG_HISTORY, historyHeader);
 
-	couponHeader.push_back ("Date       ");
 	couponHeader.push_back ("Type    ");
 	couponHeader.push_back ("Quantity");
 	initListView(hWnd, DLG_COUPONBAL, couponHeader);
+
+	CheckDlgButton(hWnd, DLG_HISTORYALL, BST_CHECKED);
 
 	return FALSE;
 }
@@ -229,6 +231,8 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		string=buffer;
 		searchCustomer(hWnd);
 		initCouponUsageType(hWnd);
+		updateCouponList(hWnd);
+		updateHistoryList(hWnd);
 		//searchRecordFromDB(string);
 		break;
 	case DLG_NEWCUSTOMER :
@@ -236,14 +240,17 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case DLG_NEWSAVE :
 		saveCustomer(hWnd);
+		updateHistoryList(hWnd);
 		break;
 	case DLG_COUPONUSE:
 		useCoupon(hWnd);
+		updateHistoryList(hWnd);
 		break;
 	case DLG_SALESNEW :
 		break;
 	case DLG_SALESSAVE :
 		newSales(hWnd);
+		updateHistoryList(hWnd);
 		break;
 	case DLG_SALESCOUPONS :
 		break;
@@ -254,14 +261,19 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case DLG_SALESDAY :
 		break;
 	case DLG_HISTORYALL :
+		updateHistoryList(hWnd);
 		break;
 	case DLG_HISTORYCOUPONS :
+		updateHistoryList(hWnd);
 		break;
 	case DLG_HISTORYSINGLE :
+		updateHistoryList(hWnd);
 		break;
 	case DLG_HISTORYSALES :
+		updateHistoryList(hWnd);
 		break;
 	case DLG_HISTORYDAY :
+		updateHistoryList(hWnd);
 		break;
 	}
 	return FALSE;
@@ -496,7 +508,7 @@ static int addSalesCoupons(HWND hWnd)
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESCOUPONSQTY), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESCOUPONSPRICE), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESCOUPONSREMARK), "");
-	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	//SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
 	CheckDlgButton(hWnd, DLG_SALESCOUPONS, BST_UNCHECKED);
 	
 	return 0;
@@ -528,7 +540,7 @@ static int addSalesSingle(HWND hWnd)
 	SendMessage(GetDlgItem(hWnd, DLG_SALESSINGLETYPE), CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0); 
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESSINGLEPRICE), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESSINGLEREMARK), "");
-	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	//SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
 	CheckDlgButton(hWnd, DLG_SALESSINGLE, BST_UNCHECKED);
 
 	return 0;
@@ -557,7 +569,7 @@ static int addSalesShopping(HWND hWnd)
 
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESSALESPRICE), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESSALESREMARK), "");
-	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	//SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
 	CheckDlgButton(hWnd, DLG_SALESSALES, BST_UNCHECKED);
 
 	return 0;
@@ -584,13 +596,14 @@ static int addSalesDayCare(HWND hWnd)
 	remark=buffer;
 	GetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), buffer, size);
 	date=buffer;
+	type="---";
 
 	_db.updateDaycare(id, type, qty, total, remark, date);
 
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESDAYQTY), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESDAYPRICE), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_SALESDAYREMARK), "");
-	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	//SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
 	CheckDlgButton(hWnd, DLG_SALESDAY, BST_UNCHECKED);
 
 	return 0;
@@ -602,6 +615,7 @@ static int newSales(HWND hWnd)
 	{
 		addSalesCoupons(hWnd);
 		initCouponUsageType(hWnd);
+		updateCouponList(hWnd);
 	}
 	if (IsDlgButtonChecked(hWnd, DLG_SALESSINGLE))
 	{
@@ -615,6 +629,7 @@ static int newSales(HWND hWnd)
 	{
 		addSalesDayCare(hWnd);
 	}
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
 	updatePoint(hWnd);
 
 	return 0;
@@ -660,30 +675,37 @@ static int useCoupon(HWND hWnd)
 	type = buffer;
 	GetWindowText(GetDlgItem(hWnd, DLG_COUPONQTY), buffer, size);
 	qty= atol(buffer);
-	_db.updateCoupons(id, type, -qty, 0, "use", date);
 
-	initCouponUsageType(hWnd);
+	long oldQty;
+	_db.readCoupons(id, type, oldQty);
+	if (oldQty > qty)
+	{
+		_db.updateCoupons(id, type, -qty, 0, "use", date);
+
+		initCouponUsageType(hWnd);
 	
-	struct Coupons coupon;
-	coupon.date = date;
-	coupon.type = type;
-	coupon.quantity = qty;
-	updateCouponList(hWnd, coupon);
+		//struct Coupons coupon;
+		//coupon.date = date;
+		//coupon.type = type;
+		//coupon.quantity = qty;
+		updateCouponList(hWnd);
 
-	SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
-	SendMessage(GetDlgItem(hWnd, DLG_COUPONTYPE), CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
-	SetWindowText(GetDlgItem(hWnd, DLG_COUPONQTY), "");
-
+		SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
+		SendMessage(GetDlgItem(hWnd, DLG_COUPONTYPE), CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
+		SetWindowText(GetDlgItem(hWnd, DLG_COUPONQTY), "");
+	}
+	
 	return 0;
 	// update coupon list view ui
 }
 
 // update history list view
 // update coupon ui
-static int updateCouponList(HWND hWnd, struct Coupons &coupon)
+static int updateCouponList(HWND hWnd)
 {
 	HWND hList = GetDlgItem(hWnd, DLG_COUPONBAL);
 	char buffer[256];
+	int size;
 
 	LVITEM lvItem;
 	memset(&lvItem, 0, sizeof(lvItem));
@@ -693,23 +715,110 @@ static int updateCouponList(HWND hWnd, struct Coupons &coupon)
 	lvItem.iSubItem = 0;
 	lvItem.pszText = buffer;
 
-	strcpy(buffer, coupon.date.c_str());
-	lvItem.iSubItem = 0;
-	SendMessage(hList, LVM_INSERTITEM, 0, (LPARAM) &lvItem);
+	size = sizeof(buffer)/sizeof(buffer[0]);
+	GetWindowText(GetDlgItem(hWnd, DLG_ID), buffer, size);
 
-	strcpy(buffer, coupon.type.c_str());
-	lvItem.iSubItem = 1;
-	SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+	std::deque<struct Coupons> coupons;
+	std::string id=buffer;
+	_db.readCoupons(id, coupons);
 
-	sprintf(buffer, "%ld", coupon.quantity);
-	lvItem.iSubItem = 2;
-	SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+	SendMessage(hList, LVM_DELETEALLITEMS, 0, 0);
+	std::deque<struct Coupons>::iterator iter = coupons.begin();
+	while (iter != coupons.end())
+	{
+		if (iter->quantity > 0)
+		{
+			strcpy(buffer, iter->type.c_str());
+			lvItem.iSubItem = 0;
+			SendMessage(hList, LVM_INSERTITEM, 0, (LPARAM) &lvItem);
+
+			sprintf(buffer, "%ld", iter->quantity);
+			lvItem.iSubItem = 1;
+			SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+
+			lvItem.iItem++;
+		}
+
+		iter++;
+	}
 
 	return 0;
 }
 
 static int updateHistoryList(HWND hWnd)
 {
+	std::string id;
+	std::deque<struct Transactions> transactions;
+
+	char buffer[512];
+	int size=sizeof(buffer)/sizeof(buffer[0]);
+	GetWindowText(GetDlgItem(hWnd, DLG_ID), buffer, size);
+
+	id = buffer;
+
+	if (IsDlgButtonChecked(hWnd, DLG_HISTORYALL))
+	{
+		_db.readTransactionAll(id, transactions);
+	}
+	else if (IsDlgButtonChecked(hWnd, DLG_HISTORYCOUPONS))
+	{
+		_db.readTransactionCoupons(id, transactions);
+	}
+	else if (IsDlgButtonChecked(hWnd, DLG_HISTORYSALES))
+	{
+		_db.readTransactionSales(id, transactions);
+	}
+	else if (IsDlgButtonChecked(hWnd, DLG_HISTORYDAY))
+	{
+		_db.readTransactionDay(id, transactions);
+	}
+	else if (IsDlgButtonChecked(hWnd, DLG_HISTORYSINGLE))
+	{
+		_db.readTransactionSingle(id, transactions);
+	}
+
+	HWND hList = GetDlgItem(hWnd, DLG_HISTORY);
+	SendMessage(hList, LVM_DELETEALLITEMS, 0, 0);
+
+	LVITEM lvItem;
+	memset(&lvItem, 0, sizeof(lvItem));
+	lvItem.mask = LVIF_TEXT;
+	lvItem.cchTextMax = 256;
+	lvItem.iItem = 0;
+	lvItem.iSubItem = 0;
+	lvItem.pszText = buffer;
+
+	std::deque<struct Transactions>::iterator iter;
+	iter = transactions.begin();
+	while (iter != transactions.end())
+	{
+		strcpy(buffer, iter->date.c_str());
+		lvItem.iSubItem = 0;
+		SendMessage(hList, LVM_INSERTITEM, 0, (LPARAM) &lvItem);
+
+		sprintf(buffer, "%s", iter->category.c_str());
+		lvItem.iSubItem = 1;
+		SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+
+		sprintf(buffer, "%s", iter->type.c_str());
+		lvItem.iSubItem = 2;
+		SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+
+		sprintf(buffer, "%ld", iter->quantity);
+		lvItem.iSubItem = 3;
+		SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+
+		sprintf(buffer, "%.1lf", iter->price);
+		lvItem.iSubItem = 4;
+		SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+
+		sprintf(buffer, "%s", iter->remark.c_str());
+		lvItem.iSubItem = 5;
+		SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
+
+		iter++;
+	}
+
 	return 0;
 }
 
