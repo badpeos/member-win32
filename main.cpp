@@ -85,19 +85,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	gInstance = hInstance;
 
-	_db.init("test.db");
+	_db.init("ddd.db");
 	getBasePath();
 	getDate(date);
-
-	Customer customer;
-	customer.id="111";
-	customer.info.name="abc";
-	customer.info.petName="pet";
-	customer.info.phone1="ph1";
-	customer.info.phone2="ph2";
-	customer.info.remark="remark";
-
-	_db.createCustomer(customer, date);
 
 	ctrls.dwSize=sizeof(INITCOMMONCONTROLSEX);
 	ctrls.dwICC=

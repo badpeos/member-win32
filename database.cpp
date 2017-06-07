@@ -73,30 +73,31 @@ int Database::createCustomer(const Customer &customer, const std::string &date)
 	// check id exist
 	int count = read(customer.id, temp);
 	if (count)
-		return -1;
+		updateInfo(customer.id, customer.info, date);
+	else
+	{
+		// info
+		sql="insert into info (date, id, name, phone1, phone2, petname, remark) values (" + 
+			std::string("'") + date + std::string("', ") +
+			std::string("'") + customer.id + std::string("', ") +
+			std::string("'") + customer.info.name + std::string("', ") +
+			std::string("'") + customer.info.phone1 + std::string("', ") +
+			std::string("'") + customer.info.phone2 + std::string("', ") +
+			std::string("'") + customer.info.petName + std::string("', ") +
+			std::string("'") + customer.info.remark + std::string("'") + 
+			std::string(");");
+		sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
+		if (msg)
+			sqlite3_free(msg);
 
-	// info
-	sql="insert into info (date, id, name, phone1, phone2, petname, remark) values (" + 
-		std::string("'") + date + std::string("', ") +
-		std::string("'") + customer.id + std::string("', ") +
-		std::string("'") + customer.info.name + std::string("', ") +
-		std::string("'") + customer.info.phone1 + std::string("', ") +
-		std::string("'") + customer.info.phone2 + std::string("', ") +
-		std::string("'") + customer.info.petName + std::string("', ") +
-		std::string("'") + customer.info.remark + std::string("'") + 
-		std::string(");");
-	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
-	if (msg)
-		sqlite3_free(msg);
-
-	// points
-	sql="insert into points (id, point) values (" + 
-		std::string("'") + customer.id + std::string("', ") + 
-		std::string("0);");
-	sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
-	if (msg)
-		sqlite3_free(msg);
-
+		// points
+		sql="insert into points (id, point) values (" + 
+			std::string("'") + customer.id + std::string("', ") + 
+			std::string("0);");
+		sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
+		if (msg)
+			sqlite3_free(msg);
+	}
 	return 0;
 }
 
@@ -124,8 +125,8 @@ int Database::updateInfo(const std::string &id, const struct Info &info, const s
 			std::string("phone2 = '") + info.phone2 + std::string("', ") +
 			std::string("petname = '") + info.petName + std::string("', ") +
 			std::string("remark = '") + info.remark + std::string("' ") + 
-			std::string("date = '") + date + std::string("' ") +
-			std::string("where id = '") + std::string("'") + id + std::string("';");
+			//std::string("date = '") + date + std::string("' ") +
+			std::string("where id = '") + id + std::string("';");
 		sqlite3_exec(_db, sql.c_str(), NULL, NULL, &msg);
 		if (msg)
 			sqlite3_free(msg);
