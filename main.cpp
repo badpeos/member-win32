@@ -150,20 +150,55 @@ static void enableWindows(HWND hWnd, bool enable)
 	EnableWindow(GetDlgItem(hWnd, DLG_HISTORYSINGLE), status);
 	EnableWindow(GetDlgItem(hWnd, DLG_HISTORYSALES), status);
 	EnableWindow(GetDlgItem(hWnd, DLG_HISTORYDAY), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_HISTORYPOINTS), status);
 	EnableWindow(GetDlgItem(hWnd, DLG_SALESDATE), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_USEPOINT), status);
+}
+
+static void blankForm(HWND hWnd)
+{
+	SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
+	SendMessage(GetDlgItem(hWnd, DLG_COUPONTYPE), CB_RESETCONTENT, (WPARAM) 0, (LPARAM) 0);
+	SetWindowText(GetDlgItem(hWnd, DLG_COUPONQTY), "");
+	SendMessage(GetDlgItem(hWnd, DLG_COUPONBAL), LVM_DELETEALLITEMS, 0, 0);
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_USEPOINT), "");
+
+	CheckDlgButton(hWnd, DLG_SALESCOUPONS, BST_UNCHECKED);
+	//SendMessage(GetDlgItem(hWnd, DLG_SALESCOUPONSTYPE), CB_RESETCONTENT, (WPARAM) 0, (LPARAM) 0);
+	SendMessage(GetDlgItem(hWnd, DLG_SALESCOUPONSTYPE), CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0); 
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESCOUPONSQTY), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESCOUPONSPRICE), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESCOUPONSREMARK), "");
+	
+	CheckDlgButton(hWnd, DLG_SALESSINGLE, BST_UNCHECKED);
+	//SendMessage(GetDlgItem(hWnd, DLG_SALESSINGLETYPE), CB_RESETCONTENT, (WPARAM) 0, (LPARAM) 0);
+	SendMessage(GetDlgItem(hWnd, DLG_SALESSINGLETYPE), CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0); 
+	//SetWindowText(GetDlgItem(hWnd, DLG_SALESSINGLEQTY), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESSINGLEPRICE), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESSINGLEREMARK), "");
+
+	CheckDlgButton(hWnd, DLG_SALESSALES, BST_UNCHECKED);
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESSALESPRICE), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESSALESREMARK), "");
+
+	CheckDlgButton(hWnd, DLG_SALESDAY, BST_UNCHECKED);
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESDAYQTY), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESDAYPRICE), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESDAYREMARK), "");
+
+	SendMessage(GetDlgItem(hWnd, DLG_HISTORY), LVM_DELETEALLITEMS, 0, 0);
+	CheckDlgButton(hWnd, DLG_HISTORYALL, BST_CHECKED);
+	CheckDlgButton(hWnd, DLG_HISTORYCOUPONS, BST_UNCHECKED);
+	CheckDlgButton(hWnd, DLG_HISTORYSINGLE, BST_UNCHECKED);
+	CheckDlgButton(hWnd, DLG_HISTORYSALES, BST_UNCHECKED);
+	CheckDlgButton(hWnd, DLG_HISTORYDAY, BST_UNCHECKED);
+	CheckDlgButton(hWnd, DLG_HISTORYPOINTS, BST_UNCHECKED);
 }
 
 static void newCustomerClick(HWND hWnd)
 {
 	BOOL status = TRUE;
-	EnableWindow(GetDlgItem(hWnd, DLG_NAME), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_ID), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_PHONE1), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_PHONE2), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_PETNAME), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_POINTBAL), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_REMARK), status);
-	EnableWindow(GetDlgItem(hWnd, DLG_NEWSAVE), status);
 
 	SetWindowText(GetDlgItem(hWnd, DLG_NAME), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_ID), "");
@@ -172,6 +207,18 @@ static void newCustomerClick(HWND hWnd)
 	SetWindowText(GetDlgItem(hWnd, DLG_PETNAME), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_POINTBAL), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_REMARK), "");
+
+	enableWindows(hWnd, false);
+	blankForm(hWnd);
+
+	EnableWindow(GetDlgItem(hWnd, DLG_NAME), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_ID), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_PHONE1), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_PHONE2), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_PETNAME), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_POINTBAL), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_REMARK), status);
+	EnableWindow(GetDlgItem(hWnd, DLG_NEWSAVE), status);
 }
 
 static BOOL initMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -265,6 +312,9 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case DLG_HISTORYDAY :
 		updateHistoryList(hWnd);
 		break;
+	case DLG_HISTORYPOINTS: 
+		updateHistoryList(hWnd);
+		break;
 	}
 	return FALSE;
 }
@@ -326,11 +376,16 @@ static int searchCustomer(HWND hWnd)
 	id=buffer;
 
 	_db.search(id, customers);
-	if (customers.size()==1)
+	if (customers.size()>0)
 	{
 		displayCustomer(hWnd, customers[0]);
 		enableWindows(hWnd, true);
 		EnableWindow(GetDlgItem(hWnd, DLG_ID), FALSE);
+		blankForm(hWnd);
+	}
+	else
+	{
+		MessageBox(hWnd, "No customer found.", "Error", MB_OK);
 	}
 
 	return 0;
@@ -599,31 +654,70 @@ static int addSalesDayCare(HWND hWnd)
 	return 0;
 }
 
-static int newSales(HWND hWnd)
+static int addUsePoint(HWND hWnd)
 {
-	if (IsDlgButtonChecked(hWnd, DLG_SALESCOUPONS))
-	{
-		addSalesCoupons(hWnd);
-		initCouponUsageType(hWnd);
-		updateCouponList(hWnd);
-	}
-	if (IsDlgButtonChecked(hWnd, DLG_SALESSINGLE))
-	{
-		addSalesSingle(hWnd);
-	}
-	if (IsDlgButtonChecked(hWnd, DLG_SALESSALES))
-	{
-		addSalesShopping(hWnd);
-	}
-	if (IsDlgButtonChecked(hWnd, DLG_SALESDAY))
-	{
-		addSalesDayCare(hWnd);
-	}
-	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
-	updatePoint(hWnd);
+	std::string id;
+	std::string date;
+	char buffer[512];
+	int size;
+	long points;
+
+	size = sizeof(buffer)/sizeof(buffer[0]);
+
+	GetWindowText(GetDlgItem(hWnd, DLG_ID), buffer, size);
+	id = buffer;
+	GetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), buffer, size);
+	date=buffer;
+	GetWindowText(GetDlgItem(hWnd, DLG_USEPOINT), buffer, size);
+	points = atol(buffer);
+
+	long oldpoint;
+	_db.readPoint(id, oldpoint);
+
+	if (points > 0 && oldpoint < points)
+		return -1;
+
+	if (points > 0)
+		_db.updatePoints(id, -points, date);
 
 	return 0;
 }
+
+static int newSales(HWND hWnd)
+{
+	if (addUsePoint(hWnd)==0)
+	{
+		if (IsDlgButtonChecked(hWnd, DLG_SALESCOUPONS))
+		{
+			addSalesCoupons(hWnd);
+			initCouponUsageType(hWnd);
+			updateCouponList(hWnd);
+		}
+		if (IsDlgButtonChecked(hWnd, DLG_SALESSINGLE))
+		{
+			addSalesSingle(hWnd);
+		}
+		if (IsDlgButtonChecked(hWnd, DLG_SALESSALES))
+		{
+			addSalesShopping(hWnd);
+		}
+		if (IsDlgButtonChecked(hWnd, DLG_SALESDAY))
+		{
+			addSalesDayCare(hWnd);
+		}
+	
+		SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+		SetWindowText(GetDlgItem(hWnd, DLG_USEPOINT), "");
+		updatePoint(hWnd);
+	}
+	else
+	{
+		MessageBox(hWnd, "Points not enough to use.", "Error", MB_OK);
+	}
+
+	return 0;
+}
+
 static int initListView(HWND hWnd, UINT ctrlID, std::deque<std::string> &header)
 {
 	HWND hList = GetDlgItem(hWnd, ctrlID);
@@ -765,6 +859,10 @@ static int updateHistoryList(HWND hWnd)
 	else if (IsDlgButtonChecked(hWnd, DLG_HISTORYSINGLE))
 	{
 		_db.readTransactionSingle(id, transactions);
+	}
+	else if (IsDlgButtonChecked(hWnd, DLG_HISTORYPOINTS))
+	{
+		_db.readTransactionPoints(id, transactions);
 	}
 
 	HWND hList = GetDlgItem(hWnd, DLG_HISTORY);

@@ -9,7 +9,6 @@
 #define DLG_NEWSALES                    1004
 #define DLG_NEWCOUPONS                  1005
 #define DLG_REPORT                      1006
-#define DLG_I                           1012
 #define IDD_MAINNEW                     2000
 #define DLG_SEARCHKEY                   2001
 #define DLG_SEARCH                      2002
@@ -49,9 +48,6 @@
 #define DLG_SALESDAY                    2036
 #define DLG_SALESDAYQTY                 2037
 #define DLG_SALESDAYPRICE               2038
-#define DLG_HISTORYALL                  2039
-#define DLG_HISTORYCOUPONS              2040
-#define DLG_HISTORYSALES                2041
 #define DLG_NEWCUSTOMER                 2042
 #define DLG_SALESCOUPONSREMARK          2043
 #define DLG_SALESSINGLEREMARK           2044
@@ -61,10 +57,15 @@
 #define DLG_SALESNEW                    2048
 #define DLG_SALESSAVE                   2049
 #define DLG_HISTORY                     2050
-#define DLG_HISTORYDAY                  2051
-#define DLG_HISTORYSINGLE               2052
+#define DLG_HISTORYALL                  2060
+#define DLG_HISTORYCOUPONS              2061
+#define DLG_HISTORYSINGLE               2062
+#define DLG_HISTORYSALES                2063
+#define DLG_HISTORYDAY                  2064
+#define DLG_HISTORYPOINTS				2065
 #define DLG_SALESDATE                   2053
 #define DLG_QUIT                        2054
+#define DLG_USEPOINT                    2055
 
 // Next default values for new objects
 // 
@@ -72,7 +73,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1013
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

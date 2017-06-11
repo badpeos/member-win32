@@ -738,3 +738,20 @@ int Database::readTransactionDay(const std::string &id, std::deque<struct Transa
 
 	return 0;
 }
+
+int Database::readTransactionPoints(const std::string &id, std::deque<struct Transactions> &transactions)
+{
+	char *msg;
+	std::map<std::string, std::deque<struct Transactions> > result;
+
+	std::string sql;
+	sql="select * from transactions where id = " + 
+		std::string("'") + id + std::string("' and category = 'point';");
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	transactions = result[id];
+
+	return 0;
+}
