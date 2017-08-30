@@ -628,8 +628,10 @@ int Database::search (const std::string &keyword, std::deque<Customer> &customer
 
 	std::string sql;
 	sql="select * from info where id like '%" + keyword + std::string("%'") + 
+		std::string(" or name like '%") + keyword + std::string("%'") + 
 		std::string(" or phone1 like '%") + keyword + std::string("%'") + 
-		std::string(" or phone2 like '%") + keyword + std::string("%';");
+		std::string(" or phone2 like '%") + keyword + std::string("%'") +
+		std::string(" or petname like '%") + keyword + std::string("%';");
 	sqlite3_exec(_db, sql.c_str(), cbInfo, &result, &msg);
 	if (msg)
 		sqlite3_free(msg);

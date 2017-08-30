@@ -14,6 +14,7 @@
 #include "resource.h"
 #include "customer.h"
 #include "database.h"
+#include "UserList.h"
 
 static HINSTANCE gInstance;
 static BOOL CALLBACK MainProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -27,12 +28,15 @@ static int initDaycareType(HWND hWnd);
 
 static int newSales(HWND hWnd);
 
-static int initListView(HWND hWnd, UINT ctrlID, std::deque<std::string> &header);
 static int updateCouponList(HWND hWnd);
 static int updateHistoryList(HWND hWnd);
 static int useCoupon(HWND hWnd);
 static int updatePoint(HWND hWnd);
+static LRESULT CALLBACK subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam);
+static void setCurrentDate(HWND hWnd);
+
 static Database _db;
+static WNDPROC oldEditProc;
 
 static const char* getBasePath(void)
 {
@@ -157,11 +161,12 @@ static void enableWindows(HWND hWnd, bool enable)
 
 static void blankForm(HWND hWnd)
 {
-	SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
+	//SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
 	SendMessage(GetDlgItem(hWnd, DLG_COUPONTYPE), CB_RESETCONTENT, (WPARAM) 0, (LPARAM) 0);
 	SetWindowText(GetDlgItem(hWnd, DLG_COUPONQTY), "");
 	SendMessage(GetDlgItem(hWnd, DLG_COUPONBAL), LVM_DELETEALLITEMS, 0, 0);
-	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	//SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+	setCurrentDate(hWnd);
 	SetWindowText(GetDlgItem(hWnd, DLG_USEPOINT), "");
 
 	CheckDlgButton(hWnd, DLG_SALESCOUPONS, BST_UNCHECKED);
@@ -207,6 +212,7 @@ static void newCustomerClick(HWND hWnd)
 	SetWindowText(GetDlgItem(hWnd, DLG_PETNAME), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_POINTBAL), "");
 	SetWindowText(GetDlgItem(hWnd, DLG_REMARK), "");
+	SetWindowText(GetDlgItem(hWnd, DLG_SEARCHKEY), "");
 
 	enableWindows(hWnd, false);
 	blankForm(hWnd);
@@ -232,19 +238,22 @@ static BOOL initMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	std::deque<std::string> historyHeader;
 	std::deque<std::string> couponHeader;
 
-	historyHeader.push_back("Date       ");
-	historyHeader.push_back("Type    ");
-	historyHeader.push_back("Sub-type  ");
-	historyHeader.push_back("Quantity");
-	historyHeader.push_back("Price     ");
-	historyHeader.push_back("Remark                         ");
+	historyHeader.push_back("日期       ");
+	historyHeader.push_back("種類    ");
+	historyHeader.push_back("類型  ");
+	historyHeader.push_back("數量");
+	historyHeader.push_back("價錢     ");
+	historyHeader.push_back("備註                         ");
 	initListView(hWnd, DLG_HISTORY, historyHeader);
 
-	couponHeader.push_back ("Type    ");
-	couponHeader.push_back ("Quantity");
+	couponHeader.push_back ("種類");
+	couponHeader.push_back ("數量");
 	initListView(hWnd, DLG_COUPONBAL, couponHeader);
 
 	CheckDlgButton(hWnd, DLG_HISTORYALL, BST_CHECKED);
+
+	HWND hInput = GetDlgItem(hWnd, DLG_SEARCHKEY);
+	oldEditProc = (WNDPROC)SetWindowLongPtr(hInput, GWLP_WNDPROC, (LONG_PTR)subEditProc);
 
 	return FALSE;
 }
@@ -256,10 +265,11 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	switch (LOWORD(wParam))
 	{
-	case IDOK:
+//	case IDOK:
 //		EndDialog(hWnd, 0);
-		break;
-	case DLG_QUIT:
+		//MessageBox(hWnd, "test", "test", MB_OK);
+//		break;
+	case IDCANCEL:
 		EndDialog(hWnd, 0);
 		break;
 	case DLG_SEARCH :
@@ -270,14 +280,25 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		initCouponUsageType(hWnd);
 		updateCouponList(hWnd);
 		updateHistoryList(hWnd);
+		setCurrentDate(hWnd);
 		//searchRecordFromDB(string);
 		break;
 	case DLG_NEWCUSTOMER :
 		newCustomerClick(hWnd);
+		updateHistoryList(hWnd);
 		break;
 	case DLG_NEWSAVE :
 		saveCustomer(hWnd);
-		updateHistoryList(hWnd);
+		{
+			char buffer[1024]={0};
+
+			GetWindowText(GetDlgItem(hWnd, DLG_ID), buffer, sizeof(buffer)/sizeof(buffer[0])); 
+			SetWindowText(GetDlgItem(hWnd, DLG_SEARCHKEY), buffer);
+
+			HWND hButton = GetDlgItem(hWnd, DLG_SEARCH);
+			SendMessage(hButton, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(0, 0));
+			SendMessage(hButton, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(0, 0));
+		}
 		break;
 	case DLG_COUPONUSE:
 		useCoupon(hWnd);
@@ -321,10 +342,16 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 static BOOL CALLBACK MainProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	static HICON hicon;
 	switch (msg)
 	{
 	case WM_INITDIALOG:
-		initMainDlg(hWnd, msg, wParam, lParam);
+		{
+			hicon = (HICON) LoadImage(GetModuleHandleW(NULL), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+			SendMessageW(hWnd, WM_SETICON, ICON_BIG, (LPARAM) hicon);
+
+			initMainDlg(hWnd, msg, wParam, lParam);
+		}
 		break;
 
 	case WM_COMMAND:
@@ -376,17 +403,44 @@ static int searchCustomer(HWND hWnd)
 	id=buffer;
 
 	_db.search(id, customers);
-	if (customers.size()>0)
+	if (customers.size()>1)
+	{
+		std::string selectID;
+		selectID = id;
+
+		if (usrList(hWnd, selectID))
+		{
+			//std::deque<Customer> newCustomers;
+			//_db.search(selectID, newCustomers);
+			Customer customer;
+			_db.read(selectID, customer);
+			//if (newCustomers.size())
+			displayCustomer(hWnd, customer);
+			enableWindows(hWnd, true);
+			EnableWindow(GetDlgItem(hWnd, DLG_ID), FALSE);
+			blankForm(hWnd);
+			SetWindowText(GetDlgItem(hWnd, DLG_SEARCHKEY), selectID.c_str());
+			SendMessage(GetDlgItem(hWnd, DLG_SEARCHKEY), EM_SETSEL, selectID.length(), selectID.length());
+		}
+		else
+		{
+			MessageBox(hWnd, "找不到會員", "錯誤", MB_OK);
+		}
+	}
+	else if (customers.size()==1)
 	{
 		displayCustomer(hWnd, customers[0]);
 		enableWindows(hWnd, true);
 		EnableWindow(GetDlgItem(hWnd, DLG_ID), FALSE);
 		blankForm(hWnd);
+		//SetWindowText(GetDlgItem(hWnd, DLG_SEARCHKEY), customers.[0].info.c_str());
+		SendMessage(GetDlgItem(hWnd, DLG_SEARCHKEY), EM_SETSEL, id.length(), id.length());
 	}
 	else
 	{
-		MessageBox(hWnd, "No customer found.", "Error", MB_OK);
+		MessageBox(hWnd, "找不到會員", "錯誤", MB_OK);
 	}
+	SetFocus(GetDlgItem(hWnd, DLG_SEARCHKEY));
 
 	return 0;
 }
@@ -456,7 +510,7 @@ static int readFromConfig(const std::string &filename, const std::string &sectio
 static int initCouponType(HWND hWnd)
 {
 	std::deque<std::string> list;
-	readFromConfig(std::string("config.ini"), std::string("bath"), list);
+	readFromConfig(std::string("config.ini"), std::string("coupon"), list);
 
 	std::deque<std::string>::iterator iter;
 	iter = list.begin();
@@ -706,19 +760,20 @@ static int newSales(HWND hWnd)
 			addSalesDayCare(hWnd);
 		}
 	
-		SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+		//SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), "");
+		setCurrentDate(hWnd);
 		SetWindowText(GetDlgItem(hWnd, DLG_USEPOINT), "");
 		updatePoint(hWnd);
 	}
 	else
 	{
-		MessageBox(hWnd, "Points not enough to use.", "Error", MB_OK);
+		MessageBox(hWnd, "積分不足夠", "錯誤", MB_OK);
 	}
 
 	return 0;
 }
 
-static int initListView(HWND hWnd, UINT ctrlID, std::deque<std::string> &header)
+int initListView(HWND hWnd, UINT ctrlID, std::deque<std::string> &header)
 {
 	HWND hList = GetDlgItem(hWnd, ctrlID);
 
@@ -774,7 +829,8 @@ static int useCoupon(HWND hWnd)
 		//coupon.quantity = qty;
 		updateCouponList(hWnd);
 
-		SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
+		//SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), "");
+		setCurrentDate(hWnd);
 		SendMessage(GetDlgItem(hWnd, DLG_COUPONTYPE), CB_SETCURSEL, (WPARAM) -1, (LPARAM) 0);
 		SetWindowText(GetDlgItem(hWnd, DLG_COUPONQTY), "");
 	}
@@ -884,7 +940,16 @@ static int updateHistoryList(HWND hWnd)
 		lvItem.iSubItem = 0;
 		SendMessage(hList, LVM_INSERTITEM, 0, (LPARAM) &lvItem);
 
-		sprintf(buffer, "%s", iter->category.c_str());
+		if (iter->category==std::string("bath"))
+			sprintf(buffer, "%s", "單次美容");
+		else if (iter->category==std::string("point"))
+			sprintf(buffer, "%s", "積分");
+		else if (iter->category==std::string("coupons"))
+			sprintf(buffer, "%s", "套票");
+		else if (iter->category==std::string("sales"))
+			sprintf(buffer, "%s", "購物");
+		else if (iter->category==std::string("care"))
+			sprintf(buffer, "%s", "日托");
 		lvItem.iSubItem = 1;
 		SendMessage(hList, LVM_SETITEM, 0, (LPARAM) &lvItem);
 
@@ -925,4 +990,52 @@ static int updatePoint(HWND hWnd)
 	SetWindowText(GetDlgItem(hWnd, DLG_POINTBAL), buffer);
 
 	return 0;
+}
+
+LRESULT CALLBACK subEditProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	HWND hButton;
+
+	switch (msg)
+	{
+	case WM_GETDLGCODE:
+		return (DLGC_WANTALLKEYS | CallWindowProc(oldEditProc, wnd, msg, wParam, lParam));
+
+	case WM_CHAR:
+		if ((wParam == VK_RETURN) || (wParam == VK_TAB))
+			return 0;
+		else
+			return (CallWindowProc(oldEditProc, wnd, msg, wParam, lParam));
+
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_RETURN:
+			hButton = GetDlgItem(GetParent(wnd), DLG_SEARCH);
+			SendMessage(hButton, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(0, 0));
+			SendMessage(hButton, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(0, 0));
+			break;
+		}
+	default:
+		return CallWindowProc(oldEditProc, wnd, msg, wParam, lParam);
+	}
+	return 0;
+}
+
+static void setCurrentDate(HWND hWnd)
+{
+	time_t ltime;
+	struct tm t;
+	char buffer[1024]={0};
+
+	time(&ltime);
+	t=*localtime(&ltime);
+	sprintf (buffer, "%04d%02d%02d", t.tm_year+1900, t.tm_mon+1, t.tm_mday);
+	SetWindowText(GetDlgItem(hWnd, DLG_SALESDATE), buffer);
+	SetWindowText(GetDlgItem(hWnd, DLG_COUPONDATE), buffer);
+}
+
+Database &getDatabase()
+{
+	return _db;
 }

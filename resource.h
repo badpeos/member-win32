@@ -2,6 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
+#define IDD_DIALOG1                     103
+#define IDI_ICON1                       104
 #define IDD_MAIN                        1000
 #define DLG_SUBMAIN                     1001
 #define DLG_NEWMEMBER                   1002
@@ -57,23 +59,26 @@
 #define DLG_SALESNEW                    2048
 #define DLG_SALESSAVE                   2049
 #define DLG_HISTORY                     2050
+#define DLG_SALESDATE                   2053
+#define DLG_QUIT                        2054
+#define DLG_USEPOINT                    2055
 #define DLG_HISTORYALL                  2060
 #define DLG_HISTORYCOUPONS              2061
 #define DLG_HISTORYSINGLE               2062
 #define DLG_HISTORYSALES                2063
 #define DLG_HISTORYDAY                  2064
-#define DLG_HISTORYPOINTS				2065
-#define DLG_SALESDATE                   2053
-#define DLG_QUIT                        2054
-#define DLG_USEPOINT                    2055
+#define DLG_HISTORYPOINTS               2065
+#define IDD_USERLIST                    3000
+#define DLG_SELECT                      3001
+#define DLG_USERLIST                    3002
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        105
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
