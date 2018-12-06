@@ -10,6 +10,7 @@
 #include <deque>
 
 #include "main.h"
+#include "admin.h"
 #include "connector.h"
 #include "resource.h"
 #include "customer.h"
@@ -335,6 +336,9 @@ static BOOL cmdMainDlg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case DLG_HISTORYPOINTS: 
 		updateHistoryList(hWnd);
+		break;
+	case DLG_ADMIN:
+		adminPage(hWnd);
 		break;
 	}
 	return FALSE;

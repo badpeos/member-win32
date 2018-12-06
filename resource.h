@@ -56,6 +56,7 @@
 #define DLG_SALESSALESREMARK            2045
 #define DLG_SALESDAYREMARK              2046
 #define DLG_SALESDAYNAME                2047
+#define DLG_NEWCUSTOMER2                2047
 #define DLG_SALESNEW                    2048
 #define DLG_SALESSAVE                   2049
 #define DLG_HISTORY                     2050
@@ -68,17 +69,22 @@
 #define DLG_HISTORYSALES                2063
 #define DLG_HISTORYDAY                  2064
 #define DLG_HISTORYPOINTS               2065
+#define DLG_ADMIN                       2066
 #define IDD_USERLIST                    3000
 #define DLG_SELECT                      3001
 #define DLG_USERLIST                    3002
+#define IDD_ADMIN                       4000
+#define DLG_RESETPOINT                  4001
+#define DLG_EXPORTPOINT                 4002
+
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        105
+#define _APS_NEXT_RESOURCE_VALUE        108
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

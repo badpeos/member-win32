@@ -461,6 +461,38 @@ static int cbTransactions(void *pt, int count, char **data, char **column)
 	return 0;
 }
 
+static int cbPointList(void *pt, int count, char **data, char **column)
+{
+
+	std::string id;
+	struct Point point;
+
+	int i;
+	for (i = 0; i<count; i++)
+	{
+		std::string colName = column[i];
+
+		if (colName == "id")
+		{
+			id = data[i];
+		}
+		else if (colName == "name")
+		{
+			point.name = data[i];
+		}
+		else if (colName == "point")
+		{
+			point.point = atol(data[i]);
+		}
+	}
+
+	std::map<std::string, struct Point> *result;
+	result = (std::map<std::string, struct Point> *) pt;
+	(*result)[id] = point;
+
+	return 0;
+}
+
 int Database::read (std::deque<Customer> &customers)
 {
 	char *msg;
@@ -756,4 +788,35 @@ int Database::readTransactionPoints(const std::string &id, std::deque<struct Tra
 	transactions = result[id];
 
 	return 0;
+}
+
+bool Database::readPoint(std::map<std::string, struct Point> &memberPoint)
+{
+	char *msg;
+
+	std::string sql;
+	sql = "select info.id, info.name, points.point from info, points "
+		"where info.id = points.id;";
+
+	std::map<std::string, struct Point> result;
+	sqlite3_exec(_db, sql.c_str(), cbPointList, &result, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	memberPoint = result;
+
+	return true;
+}
+
+bool Database::resetPoint()
+{
+	char *msg;
+	std::string sql;
+
+	sql = "update points set point = 0;";
+	sqlite3_exec(_db, sql.c_str(), cbTransactions, NULL, &msg);
+	if (msg)
+		sqlite3_free(msg);
+
+	return true;
 }

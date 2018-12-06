@@ -13,7 +13,63 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (Traditional, Hong Kong S.A.R.) resources
+// Chinese (Traditional, Taiwan) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHT)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
+#pragma code_page(950)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ADMIN DIALOGEX 0, 0, 309, 178
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "系統管理"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "退出",IDOK,242,145,60,26
+    PUSHBUTTON      "重設積分",DLG_RESETPOINT,84,18,50,20
+    PUSHBUTTON      "匯出積分",DLG_EXPORTPOINT,23,18,50,20
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ADMIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ADMIN AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Chinese (Traditional, Taiwan) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Traditional, Hong Kong SAR) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ZHH)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_HONGKONG
@@ -25,8 +81,8 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_HONGKONG
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,3,0,1
- PRODUCTVERSION 1,3,0,1
+ FILEVERSION 1,4,0,1
+ PRODUCTVERSION 1,4,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -42,10 +98,10 @@ BEGIN
         BLOCK "0c0404b0"
         BEGIN
             VALUE "FileDescription", "Member"
-            VALUE "FileVersion", "1.3.0.1"
+            VALUE "FileVersion", "1.4.0.1"
             VALUE "InternalName", "Member"
             VALUE "OriginalFilename", "Member.exe"
-            VALUE "ProductVersion", "1.3.0.1"
+            VALUE "ProductVersion", "1.4.0.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -176,7 +232,8 @@ BEGIN
     CONTROL         "購物",DLG_HISTORYSALES,"Button",BS_AUTORADIOBUTTON,541,349,32,10
     CONTROL         "日托",DLG_HISTORYDAY,"Button",BS_AUTORADIOBUTTON,541,364,32,10
     CONTROL         "積分",DLG_HISTORYPOINTS,"Button",BS_AUTORADIOBUTTON,541,379,45,10
-    PUSHBUTTON      "Quit",DLG_QUIT,544,4,50,20,NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "Quit",DLG_QUIT,491,5,50,20,NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "系統管理",DLG_ADMIN,543,5,50,20
 END
 
 IDD_USERLIST DIALOGEX 0, 0, 467, 170
@@ -224,7 +281,18 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Chinese (Traditional, Hong Kong S.A.R.) resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_MAINNEW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Chinese (Traditional, Hong Kong SAR) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -243,6 +311,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "icon1.ico"
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

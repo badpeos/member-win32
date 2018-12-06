@@ -8,6 +8,12 @@
 #include "customer.h"
 #include "sqlite3.h"
 
+struct Point
+{
+	std::string name;
+	int point;
+};
+
 class Database
 {
 public :
@@ -40,6 +46,9 @@ public :
 	int readTransactionSales(const std::string &id, std::deque<struct Transactions> &transactions);
 	int readTransactionDay(const std::string &id, std::deque<struct Transactions> &transactions);
 	int readTransactionPoints(const std::string &id, std::deque<struct Transactions> &transactions);
+
+	bool resetPoint();
+	bool readPoint(std::map<std::string, struct Point> &memberPoint);
 
 private :
 	sqlite3 *_db;
